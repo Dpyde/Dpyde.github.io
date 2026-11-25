@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thukdanai Thaothawin</title>
+<style>
+  :root{
+    --bg:#0d1117; --bg2:#161b22; --border:#30363d; --border-muted:#21262d;
+    --fg:#e6edf3; --muted:#8b949e; --accent:#2f81f7; --green:#3fb950;
+    --chip-bg:rgba(56,139,253,.1); --chip-fg:#58a6ff;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  }
+  body.light{
+    --bg:#ffffff; --bg2:#f6f8fa; --border:#d0d7de; --border-muted:#eaeef2;
+    --fg:#1f2328; --muted:#656d76; --accent:#0969da; --green:#1a7f37;
+    --chip-bg:#ddf4ff; --chip-fg:#0969da;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;scroll-padding-top:72px}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif;
+    font-size:15px;line-height:1.6;color:var(--fg);background:var(--bg);transition:background .25s,color .25s}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* header */
+  header{position:sticky;top:0;z-index:10;background:var(--bg2);border-bottom:1px solid var(--border)}
+  .bar{max-width:1200px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;gap:24px}
+  .brand{font-family:var(--mono);font-weight:600;color:var(--fg);font-size:14px}
+  .brand span{color:var(--muted)}
+  .tabs{display:flex;gap:4px;margin-left:auto}
+  .tabs a{color:var(--fg);font-size:14px;padding:6px 10px;border-radius:6px}
+  .tabs a:hover{background:var(--border-muted);text-decoration:none}
+  .tabs a.active{font-weight:600;box-shadow:inset 0 -2px 0 #f78166;border-radius:0}
+  .tbtn{border:1px solid var(--border);background:var(--bg);color:var(--fg);border-radius:6px;padding:5px 10px;font-size:13px;cursor:pointer}
+  .tbtn:hover{background:var(--border-muted)}
+
+  /* layout */
+  .layout{max-width:1200px;margin:0 auto;padding:32px 24px 64px;display:grid;grid-template-columns:296px 1fr;gap:40px}
+  aside{position:sticky;top:92px;align-self:start}
+  .avatar{width:100%;aspect-ratio:1;border-radius:50%;border:1px solid var(--border);background:var(--bg2);
+    display:grid;place-items:center;font-size:84px;font-weight:600;color:var(--muted);letter-spacing:-2px}
+  aside h1{font-size:24px;line-height:1.25;margin-top:16px;font-weight:600}
+  .handle{font-size:20px;color:var(--muted);font-weight:300}
+  .bio{margin:16px 0}
+  .follow{display:block;text-align:center;border:1px solid var(--border);background:var(--bg2);color:var(--fg);
+    border-radius:6px;padding:5px 16px;font-weight:500;font-size:14px}
+  .follow:hover{background:var(--border-muted);text-decoration:none}
+  .vcard{list-style:none;margin-top:16px;display:grid;gap:6px;font-size:14px}
+  .vcard li{display:flex;gap:8px;align-items:center}
+  .vcard svg{flex:0 0 16px;fill:var(--muted)}
+  .status{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:12px;border:1px solid var(--border);border-radius:2em;padding:2px 10px;color:var(--muted)}
+  .status i{width:8px;height:8px;border-radius:50%;background:var(--green)}
+
+  /* main */
+  section{margin-bottom:40px}
+  h2{font-size:16px;font-weight:400;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  h2 .count{font-size:12px;font-weight:500;background:var(--border-muted);border-radius:2em;padding:0 7px;color:var(--fg)}
+  .readme{border:1px solid var(--border);border-radius:6px;padding:24px}
+  .readme .path{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:12px}
+  .readme h3{font-size:24px;font-weight:600;padding-bottom:8px;border-bottom:1px solid var(--border-muted);margin-bottom:16px}
+  .readme p{margin-bottom:12px}
+  .readme ul{padding-left:2em}
+  .readme li{margin-bottom:4px}
+  code{font-family:var(--mono);font-size:85%;background:var(--border-muted);padding:.15em .4em;border-radius:6px}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .repo{border:1px solid var(--border);border-radius:6px;padding:16px;display:flex;flex-direction:column;transition:border-color .2s}
+  .repo:hover{border-color:var(--muted)}
+  .repo-h{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .repo-h svg{fill:var(--muted)}
+  .repo-h a{font-weight:600}
+  .vis{font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:2em;padding:0 7px;margin-left:auto;white-space:nowrap}
+  .repo p{color:var(--muted);font-size:13px}
+  .repo ul{color:var(--muted);font-size:13px;padding-left:18px;margin:6px 0 0;flex:1}
+  .repo-f{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--muted)}
+  .lang{display:inline-flex;align-items:center;gap:5px}
+  .lang i{width:12px;height:12px;border-radius:50%;display:inline-block}
+
+  .topics{display:flex;flex-wrap:wrap;gap:6px}
+  .topic{font-size:12px;font-weight:500;color:var(--chip-fg);background:var(--chip-bg);padding:2px 10px;border-radius:2em;line-height:20px}
+  .skillrow{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:12px 16px;border-top:1px solid var(--border)}
+  .skillrow:first-child{border-top:0}
+  .skillrow b{font-weight:600;font-size:14px}
+  .box{border:1px solid var(--border);border-radius:6px}
+
+  /* timeline */
+  .timeline{position:relative;padding-left:32px}
+  .timeline::before{content:"";position:absolute;left:11px;top:6px;bottom:6px;width:2px;background:var(--border-muted)}
+  .item{position:relative;margin-bottom:20px}
+  .item .dot{position:absolute;left:-32px;top:2px;width:24px;height:24px;border-radius:50%;background:var(--bg2);border:1px solid var(--border);display:grid;place-items:center}
+  .item .dot svg{fill:var(--muted)}
+  .item-h{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .item-h strong{font-weight:600}
+  .when{font-size:12px;color:var(--muted);font-family:var(--mono)}
+  .org{color:var(--muted);font-size:14px}
+  .item ul{padding-left:18px;margin-top:6px;font-size:14px}
+  .item li{margin-bottom:2px}
+
+  /* contribution-style bar */
+  .contrib{border:1px solid var(--border);border-radius:6px;padding:16px;overflow-x:auto}
+  .cgrid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,11px);gap:3px;width:max-content}
+  .cgrid i{width:11px;height:11px;border-radius:2px;background:var(--border-muted)}
+  .cgrid i.l1{background:#0e4429}.cgrid i.l2{background:#006d32}.cgrid i.l3{background:#26a641}.cgrid i.l4{background:#39d353}
+  body.light .cgrid i.l1{background:#9be9a8}body.light .cgrid i.l2{background:#40c463}body.light .cgrid i.l3{background:#30a14e}body.light .cgrid i.l4{background:#216e39}
+  .contrib-f{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:8px}
+
+  footer{border-top:1px solid var(--border);max-width:1200px;margin:0 auto;padding:24px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+  main{min-width:0}
+  /* architecture */
+  .archbox{border:1px solid var(--border);border-radius:6px;overflow:hidden}
+  .archtabs{display:flex;gap:0;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto}
+  .atab{font-family:var(--mono);font-size:12.5px;color:var(--muted);background:none;border:0;border-right:1px solid var(--border);padding:10px 16px;cursor:pointer;white-space:nowrap}
+  .atab:hover{color:var(--fg)}
+  .atab.active{color:var(--fg);background:var(--bg);box-shadow:inset 0 2px 0 #f78166;margin-bottom:-1px}
+  .apane{display:none;padding:16px 16px 4px}
+  .apane.active{display:block}
+  .adesc{font-size:13.5px;color:var(--muted);margin-bottom:12px}
+  .adesc strong{color:var(--fg)}
+  .ascroll{overflow-x:auto}
+  .arch{width:100%;min-width:760px;height:auto;display:block;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif}
+  .arch .node rect{fill:var(--bg2);stroke:var(--border);stroke-width:1}
+  .arch .node.k-store rect{stroke:#a371f7;stroke-opacity:.55}
+  .arch .node:hover rect{stroke:var(--accent);stroke-opacity:1}
+  .arch .nt{fill:var(--fg);font-size:13px;font-weight:600}
+  .arch .ns{fill:var(--muted);font-size:11px;font-family:var(--mono)}
+  .arch .lane{fill:var(--muted);font-size:10.5px;font-family:var(--mono);letter-spacing:1.2px}
+  .arch .foot{fill:var(--muted);font-size:12px;font-family:var(--mono)}
+  .arch .sep{stroke:var(--border-muted);stroke-dasharray:3 4}
+  .arch .boundary{fill:none;stroke:var(--accent);stroke-opacity:.45;stroke-dasharray:5 4}
+  .arch .blabel{fill:var(--accent);font-size:11px;font-family:var(--mono)}
+  .arch .edge path{fill:none;stroke-width:1.4;stroke-linejoin:round}
+  .arch .edge .base{stroke:var(--muted)}
+  .arch .edge.dashed .base{stroke-dasharray:4 4}
+  .arch .edge .flow{stroke:var(--accent);stroke-dasharray:3 13;opacity:0}
+  .ah{fill:var(--muted)}
+  .arch .elabel{fill:var(--muted);font-size:11px;font-family:var(--mono);paint-order:stroke;stroke:var(--bg);stroke-width:5px;stroke-linejoin:round}
+  .alegend{display:flex;flex-wrap:wrap;gap:6px 16px;padding:10px 16px;border-top:1px solid var(--border-muted);font-size:12px;color:var(--muted)}
+  .alegend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+  .alegend .dl{font-family:var(--mono)}
+
+  /* diagram draw-in (runs when the pane is visible) */
+  .arch .node{opacity:0;transform:translateY(6px);transform-box:fill-box}
+  .arch .edge .base{stroke-dashoffset:1;stroke-dasharray:1 1}
+  .arch .edge.dashed .base{stroke-dasharray:4 4;stroke-dashoffset:0}
+  .arch .edge{opacity:0}
+  .arch .elabel{opacity:0}
+  .play .arch .node{animation:nodeIn .45s ease forwards;animation-delay:calc(var(--i) * 60ms)}
+  .play .arch .edge{animation:fadeIn .01s linear forwards;animation-delay:var(--d)}
+  .play .arch .edge .base{animation:draw .6s ease forwards;animation-delay:var(--d)}
+  .play .arch .edge.dashed .base{animation:none}
+  .play .arch .edge .flow{animation:flow 2.4s linear infinite;animation-delay:calc(var(--d) + .7s)}
+  .play .arch .elabel{animation:fadeIn .4s ease forwards;animation-delay:var(--d)}
+  @keyframes nodeIn{to{opacity:1;transform:none}}
+  @keyframes fadeIn{to{opacity:1}}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes flow{0%{opacity:.85;stroke-dashoffset:16}100%{opacity:.85;stroke-dashoffset:0}}
+  @media (prefers-reduced-motion:reduce){
+    .arch .node,.arch .edge,.arch .elabel{opacity:1!important;transform:none!important;animation:none!important}
+    .arch .edge .base{stroke-dashoffset:0!important}.arch .edge .flow{display:none}
+  }
+
+  /* ===== page-as-diagram ===== */
+  body{background-image:radial-gradient(var(--dot) 1px,transparent 1.2px);background-size:22px 22px;background-attachment:fixed}
+  :root{--dot:#1f252d;--rx:-30px}
+  body.light{--dot:#dfe3e8}
+  .readme,.repo,.box,.archbox,.contrib{background:var(--bg)}
+  main{position:relative;padding-left:46px}
+  main>section{position:relative}
+  .port{position:absolute;left:calc(var(--rx) - 6px);top:13px;width:12px;height:12px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--muted);z-index:2;transition:border-color .3s,box-shadow .3s}
+  .port::after{content:"";position:absolute;left:10px;top:3px;width:24px;height:2px;background:var(--border);
+    transform-origin:left;transform:scaleX(0);transition:transform .4s ease .15s}
+  section.in .port{border-color:var(--accent);box-shadow:0 0 0 4px rgba(47,129,247,.15)}
+  section.in .port::after{transform:scaleX(1)}
+  .wire{position:absolute;left:calc(var(--rx) - 1px);top:27px;bottom:-54px;width:2px;background:var(--border);
+    transform-origin:top;transform:scaleY(0);transition:transform .9s cubic-bezier(.4,0,.2,1) .3s;z-index:1}
+  section.in .wire{transform:scaleY(1)}
+  .wire::before{content:"";position:absolute;bottom:-1px;left:-4px;border:5px solid transparent;border-top:7px solid var(--border);border-bottom:0}
+  .wire::after{content:"";position:absolute;left:-2px;top:0;width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:0}
+  section.in .wire::after{animation:packet 3.2s ease-in-out 1.3s infinite}
+  @keyframes packet{0%{top:0;opacity:0}10%{opacity:.9}85%{opacity:.9}100%{top:calc(100% - 8px);opacity:0}}
+  .wire em{position:absolute;left:12px;bottom:12px;font-style:normal;font-family:var(--mono);font-size:11px;color:var(--muted);
+    white-space:nowrap;background:var(--bg);padding:0 6px;border:1px dashed var(--border);border-radius:4px;opacity:0;transition:opacity .4s ease 1s}
+  section.in .wire em{opacity:1}
+  /* section titles as diagram nodes */
+  main>section>h2{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:17px;font-weight:600;
+    border:1px solid var(--border);background:var(--bg2);border-radius:6px;padding:6px 14px;margin-left:-2px;margin-bottom:16px}
+  main>section>h2 .kd{width:10px;height:10px;border-radius:50%;display:inline-block}
+  main>section>h2 .kind{color:var(--muted);font-size:13px;font-weight:400}
+  main>section>h2 .count{font-size:13px}
+  .endnode{padding:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-style:dashed}
+  .endnode p{color:var(--muted);font-size:14px}
+  .endnode .cta{display:flex;gap:8px}
+  .endnode .cta a{border:1px solid var(--border);background:var(--bg2);color:var(--fg);border-radius:6px;padding:5px 14px;font-size:14px;font-weight:500}
+  .endnode .cta a.pri{background:#238636;border-color:rgba(240,246,252,.1);color:#fff}
+  .endnode .cta a:hover{text-decoration:none;filter:brightness(1.1)}
+  /* sidebar as the "user" entry node */
+  aside .entry{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  aside .entry::after{content:"";flex:1;height:1px;background:repeating-linear-gradient(90deg,var(--border) 0 4px,transparent 4px 8px)}
+  @media (max-width:900px){main{padding-left:34px}:root{--rx:-22px}.port::after{width:16px}aside .entry{grid-column:1/-1}}
+  @media (prefers-reduced-motion:reduce){.wire,.port::after{transform:none!important;transition:none}.wire::after{display:none}.wire em{opacity:1}}
+
+  /* scroll reveal: subtle */
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr;gap:24px}
+    aside{position:static;display:grid;grid-template-columns:96px 1fr;gap:0 16px;align-items:center}
+    .avatar{font-size:34px}
+    aside h1{margin-top:0}
+    aside .bio,aside .follow,aside .vcard,aside .status{grid-column:1/-1}
+    aside .status{justify-self:start}
+    .grid{grid-template-columns:1fr}
+    .tabs{display:none}
+    .skillrow{grid-template-columns:1fr;gap:6px}
+  }
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <span class="brand">Dpyde <span>/</span> portfolio</span>
+    <nav class="tabs">
+      <a href="#overview" class="active">Overview</a>
+      <a href="#projects">Projects</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#experience">Experience</a>
+      <a href="#skills">Skills</a>
+      <a href="#education">Education</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="tbtn" id="theme" aria-label="Toggle theme">☀ Light</button>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="entry">entrypoint · user</div>
+    <div class="avatar">TT</div>
+    <div>
+      <h1>Thukdanai Thaothawin</h1>
+      <div class="handle">Dpyde</div>
+    </div>
+    <p class="bio">Computer Engineering @ Chulalongkorn. Full-stack developer working across Go, TypeScript &amp; Python — from database design to RAG pipelines.</p>
+    <a class="follow" href="https://github.com/Dpyde" target="_blank" rel="noopener">View GitHub</a>
+    <ul class="vcard">
+      <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="M1.75 16A1.75 1.75 0 0 1 0 14.25V1.75C0 .784.784 0 1.75 0h8.5C11.216 0 12 .784 12 1.75v12.5c0 .085-.006.168-.018.25h2.268a.25.25 0 0 0 .25-.25V8.285a.25.25 0 0 0-.111-.208l-1.055-.703a.749.749 0 1 1 .832-1.248l1.055.703c.487.325.779.871.779 1.456v5.965A1.75 1.75 0 0 1 14.25 16h-3.5a.766.766 0 0 1-.197-.026c-.099.017-.2.026-.303.026h-3a.75.75 0 0 1-.75-.75V14h-1v1.25a.75.75 0 0 1-.75.75Zm-.25-1.75c0 .138.112.25.25.25H4v-1.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 .75.75v1.25h2.25a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25h-8.5a.25.25 0 0 0-.25.25ZM3.75 6h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5ZM3 3.75A.75.75 0 0 1 3.75 3h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 3 3.75Zm4 3A.75.75 0 0 1 7.75 6h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 7 6.75ZM7.75 3h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5Z"/></svg>Playtorium Solutions</li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="m12.596 11.596-3.535 3.536a1.5 1.5 0 0 1-2.122 0l-3.535-3.536a6.5 6.5 0 1 1 9.192-9.193 6.5 6.5 0 0 1 0 9.193Zm-1.06-8.132v-.001a5 5 0 1 0-7.072 7.072L8 14.07l3.536-3.534a5 5 0 0 0 0-7.072ZM8 9a2 2 0 1 1-.001-3.999A2 2 0 0 1 8 9Z"/></svg>Bangkok, Thailand</li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z"/></svg><a href="https://www.linkedin.com/in/thukdanai-thaothawin-776293305/" target="_blank" rel="noopener">in/thukdanai-thaothawin</a></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"/></svg><a href="https://github.com/Dpyde" target="_blank" rel="noopener">github.com/Dpyde</a></li>
+    </ul>
+    <span class="status"><i></i>Open to grad roles · 2027</span>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <section id="overview" class="reveal"><span class="port"></span><span class="wire"><em>builds</em></span>
+      <div class="readme">
+        <div class="path">Dpyde / README.md</div>
+        <h3>Hi, I'm Thukdanai 👋</h3>
+        <p>4th-year Computer Engineering student at Chulalongkorn University (graduating May 2027) with two software internships and web platforms serving <strong>1,000+ users</strong>.</p>
+        <ul>
+          <li>Currently a <strong>Full Stack Developer Intern</strong> at Playtorium Solutions — <code>Go</code> <code>React</code> <code>PostgreSQL</code> <code>Docker</code></li>
+          <li>Building a <strong>RAG chatbot</strong> for Thai FDA submissions as my capstone</li>
+          <li>Like thinking in systems — see the <a href="#architecture">architecture diagrams</a> below</li>
+          <li>Interested in full-stack, backend, data engineering and DevOps roles</li>
+          <li>Batch leader of CP50 · Thai (native) · English (advanced)</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="projects" class="reveal"><span class="port"></span><span class="wire"><em>designed as</em></span>
+      <h2><i class="kd" style="background:#3fb950"></i>projects/<span class="kind">: service</span> <span class="count">2</span></h2>
+      <div class="grid">
+        <div class="repo">
+          <div class="repo-h"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"/></svg><a href="#projects">fda-submission-assistant</a><span class="vis">Capstone</span></div>
+          <p>RAG chatbot guiding staff and customers through the Thai FDA product submission process, citing the source section and URL in every answer.</p>
+          <ul>
+            <li>OCR + web pipeline → BGE-M3 embeddings in pgvector (HNSW)</li>
+            <li>Hybrid retrieval: semantic + full-text/trigram, merged by RRF</li>
+            <li>Conversation memory &amp; query rewriting in Supabase; Typhoon LLM</li>
+          </ul>
+          <div class="repo-f">
+            <span class="lang"><i style="background:#3572A5"></i>Python</span>
+            <span>FastAPI · pgvector · React · Docker</span>
+            <span>Team of 5 · 2026–now</span>
+            <a href="#architecture" data-arch="fda">View architecture →</a>
+          </div>
+        </div>
+        <div class="repo">
+          <div class="repo-h"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"/></svg><a href="#projects">election-data-pipeline</a><span class="vis">Course</span></div>
+          <p>OCR pipeline turning scanned election-result PDFs (Suphanburi Constituency 4) into structured datasets for a Streamlit dashboard.</p>
+          <ul>
+            <li>285 polling units · 25 sub-districts · 57 parties</li>
+            <li>Typhoon OCR API with retry &amp; backoff</li>
+            <li>Parsing with BeautifulSoup, regex, pandas; Thai numeral conversion</li>
+          </ul>
+          <div class="repo-f">
+            <span class="lang"><i style="background:#3572A5"></i>Python</span>
+            <span>pandas · Streamlit</span>
+            <span>Team of 4 · 2026</span>
+            <a href="#architecture" data-arch="elec">View architecture →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <section id="architecture" class="reveal"><span class="port"></span><span class="wire"><em>applied at</em></span>
+      <h2><i class="kd" style="background:#8b949e"></i>architecture/<span class="kind">: process</span> <span class="count">3</span></h2>
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9 z" class="ah"/></marker></defs></svg>
+      <div class="archbox">
+        <div class="archtabs" role="tablist">
+          <button class="atab active" data-t="fda" role="tab">fda-submission-assistant</button>
+          <button class="atab" data-t="elec" role="tab">election-data-pipeline</button>
+          <button class="atab" data-t="app" role="tab">internal-supplier-app</button>
+        </div>
+        <div class="apane active" id="a-fda">
+          <div class="adesc"><strong>RAG chatbot</strong> — offline ingestion builds a hybrid index; at query time follow-ups are rewritten with conversation memory, retrieved by semantic + keyword search, fused with RRF and answered by the LLM with citations.</div>
+          <div class="ascroll"><svg viewBox="0 0 960 460" class="arch" role="img" aria-label="FDA Submission Assistant architecture diagram">
+<text class="lane" x="20" y="30">INGESTION PIPELINE</text><line class="sep" x1="20" y1="238" x2="940" y2="238"/><text class="lane" x="20" y="264">QUERY PATH</text><rect class="boundary" x="196" y="272" width="558" height="78" rx="8"/><text class="blabel" x="746" y="266" text-anchor="end">🐳 Docker</text>
+<g class="edge" style="--d:0.25s"><path class="base" d="M185 71 L360 71 L360 99.1 L380 99.1" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M185 71 L360 71 L360 99.1 L380 99.1"/></g>
+<g class="edge" style="--d:0.37s"><path class="base" d="M185 141 L222 141" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M185 141 L222 141"/></g>
+<g class="edge" style="--d:0.49s"><path class="base" d="M342 141 L360 141 L360 115.2 L380 115.2" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M342 141 L360 141 L360 115.2 L380 115.2"/></g>
+<g class="edge" style="--d:0.61s"><path class="base" d="M510 106 L548 106" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M510 106 L548 106"/></g>
+<g class="edge" style="--d:0.73s"><path class="base" d="M698 106 L740 106" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M698 106 L740 106"/></g>
+<text class="elabel" style="--d:0.93s" x="719" y="96" text-anchor="middle">upsert</text>
+<g class="edge" style="--d:0.85s"><path class="base" d="M160 311 L210 311" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M160 311 L210 311"/></g>
+<g class="edge" style="--d:0.97s"><path class="base" d="M360 311 L400 311" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M360 311 L400 311"/></g>
+<g class="edge dashed" style="--d:1.09s"><path class="base" d="M470 337 L470 372" marker-end="url(#arrow)"/><path class="flow" d="M470 337 L470 372"/></g>
+<text class="elabel" style="--d:1.29s" x="476" y="360" text-anchor="start">history</text>
+<g class="edge" style="--d:1.21s"><path class="base" d="M540 311 L580 311" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M540 311 L580 311"/></g>
+<g class="edge" style="--d:1.33s"><path class="base" d="M660 285 L660 215 L840 215 L840 150" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M660 285 L660 215 L840 215 L840 150"/></g>
+<text class="elabel" style="--d:1.53s" x="750" y="208" text-anchor="middle">top-k → RRF</text>
+<g class="edge" style="--d:1.45s"><path class="base" d="M740 311 L790 311" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M740 311 L790 311"/></g>
+<g class="edge" style="--d:1.57s"><path class="base" d="M865 337 L865 440 L90 440 L90 337" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M865 337 L865 440 L90 440 L90 337"/></g>
+<text class="elabel" style="--d:1.77s" x="478" y="434" text-anchor="middle">answer + cited section &amp; URL</text>
+<g class="node k-ext" style="--i:0"><rect x="20" y="48" width="165" height="46" rx="6"/><circle cx="32" cy="60" r="3.5" fill="#d29922"/><text class="nt" x="102.5" y="69.0" text-anchor="middle">Thai FDA web pages</text><text class="ns" x="102.5" y="85.0" text-anchor="middle">scraped HTML</text></g>
+<g class="node k-ext" style="--i:1"><rect x="20" y="118" width="165" height="46" rx="6"/><circle cx="32" cy="130" r="3.5" fill="#d29922"/><text class="nt" x="102.5" y="139.0" text-anchor="middle">Scanned documents</text><text class="ns" x="102.5" y="155.0" text-anchor="middle">PDF / images</text></g>
+<g class="node k-proc" style="--i:2"><rect x="222" y="118" width="120" height="46" rx="6"/><circle cx="234" cy="130" r="3.5" fill="#8b949e"/><text class="nt" x="282.0" y="139.0" text-anchor="middle">OCR</text><text class="ns" x="282.0" y="155.0" text-anchor="middle">text extraction</text></g>
+<g class="node k-proc" style="--i:3"><rect x="380" y="83" width="130" height="46" rx="6"/><circle cx="392" cy="95" r="3.5" fill="#8b949e"/><text class="nt" x="445.0" y="104.0" text-anchor="middle">Chunking</text><text class="ns" x="445.0" y="120.0" text-anchor="middle">section-aware</text></g>
+<g class="node k-proc" style="--i:4"><rect x="548" y="83" width="150" height="46" rx="6"/><circle cx="560" cy="95" r="3.5" fill="#8b949e"/><text class="nt" x="623.0" y="104.0" text-anchor="middle">BGE-M3</text><text class="ns" x="623.0" y="120.0" text-anchor="middle">embeddings</text></g>
+<g class="node k-store" style="--i:5"><rect x="740" y="62" width="200" height="88" rx="6"/><circle cx="752" cy="74" r="3.5" fill="#a371f7"/><text class="nt" x="840.0" y="104.0" text-anchor="middle">PostgreSQL + pgvector</text><text class="ns" x="840.0" y="120.0" text-anchor="middle">HNSW · full-text · trigram</text></g>
+<g class="node k-client" style="--i:6"><rect x="20" y="285" width="140" height="52" rx="6"/><circle cx="32" cy="297" r="3.5" fill="#2f81f7"/><text class="nt" x="90.0" y="309.0" text-anchor="middle">React frontend</text><text class="ns" x="90.0" y="325.0" text-anchor="middle">chat UI</text></g>
+<g class="node k-svc" style="--i:7"><rect x="210" y="285" width="150" height="52" rx="6"/><circle cx="222" cy="297" r="3.5" fill="#3fb950"/><text class="nt" x="285.0" y="309.0" text-anchor="middle">FastAPI</text><text class="ns" x="285.0" y="325.0" text-anchor="middle">chat service</text></g>
+<g class="node k-svc" style="--i:8"><rect x="400" y="285" width="140" height="52" rx="6"/><circle cx="412" cy="297" r="3.5" fill="#3fb950"/><text class="nt" x="470.0" y="309.0" text-anchor="middle">Query rewriting</text><text class="ns" x="470.0" y="325.0" text-anchor="middle">follow-up aware</text></g>
+<g class="node k-store" style="--i:9"><rect x="400" y="372" width="140" height="46" rx="6"/><circle cx="412" cy="384" r="3.5" fill="#a371f7"/><text class="nt" x="470.0" y="393.0" text-anchor="middle">Supabase</text><text class="ns" x="470.0" y="409.0" text-anchor="middle">memory + summary</text></g>
+<g class="node k-svc" style="--i:10"><rect x="580" y="285" width="160" height="52" rx="6"/><circle cx="592" cy="297" r="3.5" fill="#3fb950"/><text class="nt" x="660.0" y="309.0" text-anchor="middle">Hybrid retrieval</text><text class="ns" x="660.0" y="325.0" text-anchor="middle">semantic + keyword</text></g>
+<g class="node k-ext" style="--i:11"><rect x="790" y="285" width="150" height="52" rx="6"/><circle cx="802" cy="297" r="3.5" fill="#d29922"/><text class="nt" x="865.0" y="309.0" text-anchor="middle">Typhoon LLM</text><text class="ns" x="865.0" y="325.0" text-anchor="middle">grounded answer</text></g>
+
+</svg></div>
+        </div>
+        <div class="apane" id="a-elec">
+          <div class="adesc"><strong>Batch ETL</strong> — scanned result sheets are OCR'd through an external API with retry/backoff, parsed and cleaned into tidy tables that feed the team's dashboard.</div>
+          <div class="ascroll"><svg viewBox="0 0 960 240" class="arch" role="img" aria-label="Election Data Pipeline architecture diagram">
+<text class="lane" x="10" y="40">BATCH ETL · PYTHON</text>
+<g class="edge" style="--d:0.25s"><path class="base" d="M145 100 L171 100" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M145 100 L171 100"/></g>
+<g class="edge" style="--d:0.37s"><path class="base" d="M306 100 L332 100" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M306 100 L332 100"/></g>
+<g class="edge" style="--d:0.49s"><path class="base" d="M467 100 L493 100" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M467 100 L493 100"/></g>
+<g class="edge" style="--d:0.61s"><path class="base" d="M628 100 L654 100" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M628 100 L654 100"/></g>
+<g class="edge" style="--d:0.73s"><path class="base" d="M789 100 L815 100" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M789 100 L815 100"/></g>
+<g class="edge dashed" style="--d:0.85s"><path class="base" d="M265.5 130 L265 165 L212 165 L211.5 130" marker-end="url(#arrow)"/><path class="flow" d="M265.5 130 L265 165 L212 165 L211.5 130"/></g>
+<text class="elabel" style="--d:1.05s" x="238.5" y="182" text-anchor="middle">on failure</text>
+<g class="node k-ext" style="--i:0"><rect x="10" y="70" width="135" height="60" rx="6"/><circle cx="22" cy="82" r="3.5" fill="#d29922"/><text class="nt" x="77.5" y="98.0" text-anchor="middle">Scanned PDFs</text><text class="ns" x="77.5" y="114.0" text-anchor="middle">285 polling units</text></g>
+<g class="node k-ext" style="--i:1"><rect x="171" y="70" width="135" height="60" rx="6"/><circle cx="183" cy="82" r="3.5" fill="#d29922"/><text class="nt" x="238.5" y="98.0" text-anchor="middle">Typhoon OCR API</text><text class="ns" x="238.5" y="114.0" text-anchor="middle">retry + backoff</text></g>
+<g class="node k-proc" style="--i:2"><rect x="332" y="70" width="135" height="60" rx="6"/><circle cx="344" cy="82" r="3.5" fill="#8b949e"/><text class="nt" x="399.5" y="98.0" text-anchor="middle">Parser</text><text class="ns" x="399.5" y="114.0" text-anchor="middle">BeautifulSoup · regex</text></g>
+<g class="node k-proc" style="--i:3"><rect x="493" y="70" width="135" height="60" rx="6"/><circle cx="505" cy="82" r="3.5" fill="#8b949e"/><text class="nt" x="560.5" y="98.0" text-anchor="middle">Clean &amp; normalize</text><text class="ns" x="560.5" y="114.0" text-anchor="middle">pandas · Thai numerals</text></g>
+<g class="node k-store" style="--i:4"><rect x="654" y="70" width="135" height="60" rx="6"/><circle cx="666" cy="82" r="3.5" fill="#a371f7"/><text class="nt" x="721.5" y="98.0" text-anchor="middle">CSV / Excel</text><text class="ns" x="721.5" y="114.0" text-anchor="middle">structured datasets</text></g>
+<g class="node k-client" style="--i:5"><rect x="815" y="70" width="135" height="60" rx="6"/><circle cx="827" cy="82" r="3.5" fill="#2f81f7"/><text class="nt" x="882.5" y="98.0" text-anchor="middle">Streamlit</text><text class="ns" x="882.5" y="114.0" text-anchor="middle">dashboard</text></g>
+<text class="foot" x="480" y="222" text-anchor="middle">25 sub-districts · 8 constituency candidates · 57 party-list parties</text>
+</svg></div>
+        </div>
+        <div class="apane" id="a-app">
+          <div class="adesc"><strong>Internal web app @ Playtorium</strong> — containerised React + Gin + PostgreSQL stack with Goose-managed schema changes, shipped through a merge-request → QA → demo workflow. <em>Simplified, client details omitted.</em></div>
+          <div class="ascroll"><svg viewBox="0 0 960 370" class="arch" role="img" aria-label="Internal Supplier App architecture diagram">
+<text class="lane" x="30" y="40">RUNTIME</text><rect class="boundary" x="16" y="50" width="730" height="188" rx="8"/><text class="blabel" x="738" y="232" text-anchor="end">🐳 Docker</text><text class="lane" x="30" y="284">DELIVERY · GITLAB MR WORKFLOW</text>
+<g class="edge" style="--d:0.25s"><path class="base" d="M200 98 L290 98" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M200 98 L290 98"/></g>
+<text class="elabel" style="--d:0.45s" x="245" y="90" text-anchor="middle">HTTP / JSON</text>
+<g class="edge" style="--d:0.37s"><path class="base" d="M460 98 L560 98" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M460 98 L560 98"/></g>
+<text class="elabel" style="--d:0.57s" x="510" y="90" text-anchor="middle">SQL</text>
+<g class="edge dashed" style="--d:0.49s"><path class="base" d="M790 85 L730 85" marker-end="url(#arrow)"/><path class="flow" d="M790 85 L730 85"/></g>
+<text class="elabel" style="--d:0.69s" x="760" y="78" text-anchor="middle">migrate</text>
+<g class="edge" style="--d:0.61s"><path class="base" d="M375 126 L375 206 L790 206" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M375 126 L375 206 L790 206"/></g>
+<text class="elabel" style="--d:0.81s" x="560" y="199" text-anchor="middle">business events</text>
+<g class="edge" style="--d:0.73s"><path class="base" d="M180 323 L230 323" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M180 323 L230 323"/></g>
+<g class="edge" style="--d:0.85s"><path class="base" d="M400 323 L450 323" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M400 323 L450 323"/></g>
+<g class="edge" style="--d:0.97s"><path class="base" d="M580 323 L630 323" pathLength="1" marker-end="url(#arrow)"/><path class="flow" d="M580 323 L630 323"/></g>
+<g class="node k-client" style="--i:0"><rect x="30" y="70" width="170" height="56" rx="6"/><circle cx="42" cy="82" r="3.5" fill="#2f81f7"/><text class="nt" x="115.0" y="96.0" text-anchor="middle">React (TypeScript)</text><text class="ns" x="115.0" y="112.0" text-anchor="middle">supplier &amp; employee UI</text></g>
+<g class="node k-svc" style="--i:1"><rect x="290" y="70" width="170" height="56" rx="6"/><circle cx="302" cy="82" r="3.5" fill="#3fb950"/><text class="nt" x="375.0" y="96.0" text-anchor="middle">Go · Gin API</text><text class="ns" x="375.0" y="112.0" text-anchor="middle">REST endpoints</text></g>
+<g class="node k-store" style="--i:2"><rect x="560" y="62" width="170" height="72" rx="6"/><circle cx="572" cy="74" r="3.5" fill="#a371f7"/><text class="nt" x="645.0" y="96.0" text-anchor="middle">PostgreSQL</text><text class="ns" x="645.0" y="112.0" text-anchor="middle">app data</text></g>
+<g class="node k-proc" style="--i:3"><rect x="790" y="62" width="150" height="46" rx="6"/><circle cx="802" cy="74" r="3.5" fill="#8b949e"/><text class="nt" x="865.0" y="83.0" text-anchor="middle">Goose</text><text class="ns" x="865.0" y="99.0" text-anchor="middle">schema migrations</text></g>
+<g class="node k-ext" style="--i:4"><rect x="790" y="178" width="150" height="56" rx="6"/><circle cx="802" cy="190" r="3.5" fill="#d29922"/><text class="nt" x="865.0" y="204.0" text-anchor="middle">Email</text><text class="ns" x="865.0" y="220.0" text-anchor="middle">notifications</text></g>
+<g class="node k-proc" style="--i:5"><rect x="30" y="300" width="150" height="46" rx="6"/><circle cx="42" cy="312" r="3.5" fill="#8b949e"/><text class="nt" x="105.0" y="321.0" text-anchor="middle">Feature branch</text><text class="ns" x="105.0" y="337.0" text-anchor="middle">git</text></g>
+<g class="node k-proc" style="--i:6"><rect x="230" y="300" width="170" height="46" rx="6"/><circle cx="242" cy="312" r="3.5" fill="#8b949e"/><text class="nt" x="315.0" y="321.0" text-anchor="middle">Merge request</text><text class="ns" x="315.0" y="337.0" text-anchor="middle">code review</text></g>
+<g class="node k-proc" style="--i:7"><rect x="450" y="300" width="130" height="46" rx="6"/><circle cx="462" cy="312" r="3.5" fill="#8b949e"/><text class="nt" x="515.0" y="321.0" text-anchor="middle">QA</text><text class="ns" x="515.0" y="337.0" text-anchor="middle">testing</text></g>
+<g class="node k-client" style="--i:8"><rect x="630" y="300" width="170" height="46" rx="6"/><circle cx="642" cy="312" r="3.5" fill="#2f81f7"/><text class="nt" x="715.0" y="321.0" text-anchor="middle">Demo environment</text><text class="ns" x="715.0" y="337.0" text-anchor="middle">client review</text></g>
+
+</svg></div>
+        </div>
+        <div class="alegend">
+          <span><i style="background:#2f81f7"></i>client</span><span><i style="background:#3fb950"></i>service</span>
+          <span><i style="background:#a371f7"></i>data store</span><span><i style="background:#d29922"></i>external</span>
+          <span><i style="background:#8b949e"></i>process</span><span class="dl">┄ async / conditional</span>
+        </div>
+      </div>
+    </section>
+    <section id="experience" class="reveal"><span class="port"></span><span class="wire"><em>sharpened</em></span>
+      <h2><i class="kd" style="background:#2f81f7"></i>experience/<span class="kind">: client</span> <span class="count">5</span></h2>
+      <div class="timeline">
+        <div class="item reveal">
+          <span class="dot"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"/></svg></span>
+          <div class="item-h"><strong>Full Stack Developer Intern</strong><span class="when">May 2026 – Present</span></div>
+          <div class="org">Playtorium Solutions</div>
+          <ul>
+            <li>Backend &amp; frontend features for an internal supplier/employee app for a retail client (Go/Gin, React TS, PostgreSQL, Docker)</li>
+            <li>Email notification feature for business workflows</li>
+            <li>PostgreSQL schema migrations with Goose</li>
+            <li>Merge-request workflow with devs &amp; QA: reviews, conflicts, demo deliveries</li>
+          </ul>
+        </div>
+        <div class="item reveal">
+          <span class="dot"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"/></svg></span>
+          <div class="item-h"><strong>Senior Backend Developer</strong><span class="when">Jul 2025 – Mar 2026</span></div>
+          <div class="org">ISD-SGCU · Chulalongkorn Student Government</div>
+          <ul>
+            <li>Restructured the freshman activity platform backend (1,000+ users) with Next.js &amp; Prisma</li>
+            <li>Built a dynamic check-in feature configurable per event</li>
+          </ul>
+        </div>
+        <div class="item reveal">
+          <span class="dot"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"/></svg></span>
+          <div class="item-h"><strong>Head of IT (Website)</strong><span class="when">Sep – Dec 2025</span></div>
+          <div class="org">Comsampan</div>
+          <ul>
+            <li>Full-stack event website (Go + Next.js) for 200+ users, deployed on Vercel</li>
+            <li>Led developers and UX/UI designers; turned organizer requirements into deliverables</li>
+          </ul>
+        </div>
+        <div class="item reveal">
+          <span class="dot"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"/></svg></span>
+          <div class="item-h"><strong>Senior Backend Developer</strong><span class="when">May 2025</span></div>
+          <div class="org">FE 18th Camp · Engineering Academic Camp</div>
+          <ul>
+            <li>APIs for a learning-management site (300+ users) with Next.js &amp; Prisma</li>
+            <li>Designed auth/authorization for students and staff; reviewed backend devs' APIs</li>
+          </ul>
+        </div>
+        <div class="item reveal">
+          <span class="dot"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"/></svg></span>
+          <div class="item-h"><strong>Backend Engineer Intern</strong><span class="when">Dec 2024 – Jan 2025</span></div>
+          <div class="org">Fairdee · Insurtech</div>
+          <ul><li>CRUD API prototype with Django &amp; DRF following company project structure</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills" class="reveal"><span class="port"></span><span class="wire"><em>rooted in</em></span>
+      <h2><i class="kd" style="background:#a371f7"></i>skills/<span class="kind">: store</span></h2>
+      <div class="box">
+        <div class="skillrow"><b>Languages</b><div class="topics"><span class="topic">go</span><span class="topic">typescript</span><span class="topic">python</span><span class="topic">sql</span><span class="topic">java</span><span class="topic">cpp</span></div></div>
+        <div class="skillrow"><b>Backend</b><div class="topics"><span class="topic">gin</span><span class="topic">fastapi</span><span class="topic">django-rest-framework</span><span class="topic">nextjs</span><span class="topic">prisma</span><span class="topic">postgresql</span><span class="topic">supabase</span><span class="topic">goose</span></div></div>
+        <div class="skillrow"><b>Frontend &amp; DevOps</b><div class="topics"><span class="topic">react</span><span class="topic">nextjs</span><span class="topic">docker</span><span class="topic">git</span><span class="topic">github</span><span class="topic">gitlab</span><span class="topic">vercel</span></div></div>
+        <div class="skillrow"><b>Data &amp; AI</b><div class="topics"><span class="topic">pgvector</span><span class="topic">rag</span><span class="topic">bge-m3</span><span class="topic">hybrid-search</span><span class="topic">pandas</span><span class="topic">ocr</span><span class="topic">beautifulsoup</span><span class="topic">streamlit</span></div></div>
+      </div>
+    </section>
+
+    <section id="education" class="reveal"><span class="port"></span><span class="wire"><em>next →</em></span>
+      <h2><i class="kd" style="background:#d29922"></i>education/<span class="kind">: origin</span></h2>
+      <div class="grid">
+        <div class="repo">
+          <div class="repo-h"><a href="#education">Chulalongkorn University</a><span class="vis">GPAX 3.31</span></div>
+          <p>B.Eng. Computer Engineering · Expected May 2027</p>
+          <ul>
+            <li>Software Architecture · Software-Defined Systems (in progress)</li>
+            <li>Data Science &amp; Data Engineering · Database Systems</li>
+            <li>Distributed Systems · OS &amp; System Programming · Networks</li>
+          </ul>
+        </div>
+        <div class="repo">
+          <div class="repo-h"><a href="#education">CP50 Batch Leader</a><span class="vis">Feb 2025 – now</span></div>
+          <p>Head of Students, Computer Engineering, Chulalongkorn</p>
+          <ul>
+            <li>Head of Information, ICPC Asia Bangkok Regional 2025</li>
+            <li>Head of Registration, CPLink career-path program</li>
+            <li>Coordinator for orientation &amp; commencement</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section id="contact" class="reveal"><span class="port"></span>
+      <h2><i class="kd" style="background:#3fb950"></i>contact<span class="kind">: sink</span></h2>
+      <div class="box endnode">
+        <p>Request accepted 🟢 — open to full-stack, backend, data engineering and DevOps roles (2027).</p>
+        <div class="cta"><a class="pri" href="https://www.linkedin.com/in/thukdanai-thaothawin-776293305/" target="_blank" rel="noopener">Connect on LinkedIn</a><a href="https://github.com/Dpyde" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <span>© <span id="yr"></span> Thukdanai Thaothawin</span>
+  <span><a href="https://www.linkedin.com/in/thukdanai-thaothawin-776293305/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://github.com/Dpyde" target="_blank" rel="noopener">GitHub</a></span>
+</footer>
+
+<script>
+  // subtle scroll reveal
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
+  document.querySelectorAll('.reveal').forEach(n=>io.observe(n));
+
+
+  // theme toggle
+  const t=document.getElementById('theme');
+  t.onclick=()=>{const l=document.body.classList.toggle('light');t.textContent=l?'☾ Dark':'☀ Light'};
+
+
+  // architecture tabs + draw-in when visible
+  const abox=document.querySelector('.archbox');
+  const play=()=>{abox.classList.remove('play');void abox.offsetWidth;abox.classList.add('play')};
+  new IntersectionObserver((es,o)=>es.forEach(e=>{if(e.isIntersecting){play();o.disconnect()}}),{threshold:.25}).observe(abox);
+  function showArch(t){document.querySelectorAll('.atab').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
+    document.querySelectorAll('.apane').forEach(p=>p.classList.toggle('active',p.id==='a-'+t));play()}
+  document.querySelectorAll('.atab').forEach(b=>b.onclick=()=>showArch(b.dataset.t));
+  document.querySelectorAll('[data-arch]').forEach(a=>a.addEventListener('click',()=>showArch(a.dataset.arch)));
+
+  // active tab on scroll
+  const tabs=[...document.querySelectorAll('.tabs a')];
+  const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){tabs.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-40% 0px -55% 0px'});
+  document.querySelectorAll('main section[id]').forEach(s=>so.observe(s));
+  document.getElementById('yr').textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
